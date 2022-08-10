@@ -1,0 +1,65 @@
+#we just need to browse http://localhost:5601
+#image tag of es and kibana should match
+version: "3.7"
+services:
+  elasticsearch:
+    container_name: es-container
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - 9200:9200
+
+  kibana:
+    container_name: kb-container
+    image: docker.elastic.co/kibana/kibana:7.16.3
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es-container:9200
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
+
+  configes:
+    container_name: config-of-es
+    image: configes:1.0.0
+    command: /app/scripts/createEsObjects.sh
+    volumes:
+      - ./scripts:/app/scripts:ro
+    depends_on:
+      elasticsearch:
+        condition: service_started
+
+  logstash:
+    container_name: log-container
+    image: docker.elastic.co/logstash/logstash:7.16.3
+    environment:
+      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+      - xpack.security.enabled=false
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "5044:5044"
+    depends_on:
+      configes:
+        condition: service_completed_successfully
+
+  filebeat:
+    container_name: beat-container
+    image: docker.elastic.co/beats/filebeat:7.16.3
+    volumes:
+      - ./filebeat/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml
+      - ./logs:/logs:ro
+    command: ["--strict.perms=false"]
+    depends_on:
+      - logstash
+
+  app:
+    container_name: app-container
+    image: logexport:1.0.0
+    environment:
+      - "LOG_DIR=/logs"
+    volumes:
+      - ./logs:/logs:rw

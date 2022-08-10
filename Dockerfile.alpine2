@@ -1,0 +1,10 @@
+FROM alpine:latest
+
+
+RUN apk --no-cache add curl
+#RUN apk add --no-cache bash
+RUN mkdir -p /app/scripts/
+COPY ./esdc/scripts /app/scripts/
+WORKDIR /app/scripts/
+
+CMD ["/app/scripts/createEsObjects.sh"]

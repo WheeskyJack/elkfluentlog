@@ -1,0 +1,50 @@
+{
+    "index_patterns": [
+        "logexport*"
+    ],
+    "priority": 0,
+    "version": 1,
+    "data_stream": {},
+    "template": {
+        "settings": {
+            "index": {
+                "number_of_shards": "1",
+                "number_of_replicas": "0",
+                "lifecycle.name": "logexport-policy"
+            }
+        },
+        "mappings": {
+            "dynamic": "false",
+            "properties": {
+                "level": {
+                    "type": "text"
+                },
+                "caller": {
+                    "type": "text"
+                },
+                "msg": {
+                    "type": "text"
+                },
+                "statuscode": {
+                    "type": "integer"
+                },
+                "messageid": {
+                    "type": "keyword"
+                },
+                "reason": {
+                    "type": "text"
+                },
+                "method": {
+                    "type": "text",
+                    "fielddata": true
+                },
+                "stacktrace": {
+                    "type": "text"
+                },
+                "@timestamp": {
+                    "type": "date"
+                }
+            }
+        }
+    }
+}

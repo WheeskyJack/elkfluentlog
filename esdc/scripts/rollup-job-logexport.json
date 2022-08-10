@@ -1,0 +1,21 @@
+{
+    "index_pattern": "logexport",
+    "rollup_index": "rollup_logexport",
+    "cron": "*/30 * * * * ?",
+    "page_size": 1000,
+    "groups": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "time_zone": "UTC",
+        "fixed_interval": "10s",
+        "delay": "1s"
+      },
+      "terms": {
+        "fields": [
+          "messageid",
+          "method",
+          "statuscode"
+        ]
+      }
+    }
+  }
