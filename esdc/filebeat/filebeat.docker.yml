@@ -1,0 +1,11 @@
+
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /logs/log.json
+output.logstash:
+  hosts: ["log-container:5044"]
+
+xpack.monitoring:
+  enabled: false

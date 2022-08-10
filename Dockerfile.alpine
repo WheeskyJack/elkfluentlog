@@ -1,0 +1,8 @@
+FROM alpine:latest
+
+RUN mkdir /logs
+RUN mkdir /app
+WORKDIR /app
+COPY . .
+
+CMD ["/app/main"]
